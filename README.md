@@ -96,3 +96,21 @@ She features a transparent, overlay-style UI inspired by sci-fi aesthetics, prov
     * *"Lock the screen."*
 
 ## 📁 Project Structure
+Luna_AI_Assistant/ ├── assets/ # HTML/CSS/JS frontend files ├── core/ │ ├── brain.py # LLM logic & Autonomy loop │ ├── skills.py # System automation & Tools │ ├── voice.py # TTS engine │ └── memory.json # Chat history ├── main.py # Entry point (Window management) └── requirements.txt # Dependencies
+
+## 🤝 Contributing
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1.  Fork the project.
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`).
+3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4.  Push to the Branch (`git push origin feature/AmazingFeature`).
+5.  Open a Pull Request.
+
+## 📄 License
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+<p align="center">
+  Made with ❤️ by keshav011g
+</p>
