@@ -60,7 +60,7 @@ She features a transparent, overlay-style UI inspired by sci-fi aesthetics, prov
 
 1.  **Clone the Repository**
     ```bash
-    git clone [https://github.com/keshav011g/Luna_AI_Assistant.git](https://github.com/keshav011g/Luna_AI_Assistant.git)
+    git clone https://github.com/keshav011g/Luna_AI_Assistant.git
     cd Luna_AI_Assistant
     ```
 
