@@ -94,10 +94,6 @@ She features a transparent, overlay-style UI inspired by sci-fi aesthetics, prov
     * *"Make a report on Quantum Mechanics."*
     * *"Take a note: Buy milk."*
     * *"Lock the screen."*
-
-## 📁 Project Structure
-Luna_AI_Assistant/ ├── assets/ # HTML/CSS/JS frontend files ├── core/ │ ├── brain.py # LLM logic & Autonomy loop │ ├── skills.py # System automation & Tools │ ├── voice.py # TTS engine │ └── memory.json # Chat history ├── main.py # Entry point (Window management) └── requirements.txt # Dependencies
-
 ## 🤝 Contributing
 Contributions are welcome! Please feel free to submit a Pull Request.
 
