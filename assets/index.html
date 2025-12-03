@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luna AI</title>
+    <style>
+        :root {
+            --bg-color: rgba(23, 23, 23, 0.95);
+            --user-msg-bg: #2f2f2f;
+            --ai-msg-bg: transparent;
+            --accent: #ff69b4;
+            --text-color: #ececec;
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+
+        /* Title Bar */
+        #title-bar {
+            height: 30px;
+            background: #111;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 10px; user-select: none; cursor: default;
+        }
+        .drag-region { flex: 1; height: 100%; display: flex; align-items: center; font-size: 12px; font-weight: bold; color: #888; -webkit-app-region: drag; }
+        .window-controls { display: flex; gap: 8px; z-index: 100; -webkit-app-region: no-drag; }
+        .control-btn { width: 12px; height: 12px; border-radius: 50%; cursor: pointer; transition: transform 0.1s; }
+        .close-btn { background: #ff5f56; }
+        .min-btn { background: #ffbd2e; }
+        .control-btn:hover { transform: scale(1.1); }
+
+        /* Reactor */
+        .reactor-container {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 0; opacity: 0.3; pointer-events: none; transition: all 0.5s ease;
+        }
+        
+        body.mini-mode { background: transparent; border: none; }
+        body.mini-mode #chat-container, body.mini-mode #input-area, body.mini-mode #title-bar { display: none; }
+        body.mini-mode .reactor-container { opacity: 1; cursor: pointer; pointer-events: auto; }
+
+        .arc-reactor {
+            width: 140px; height: 140px; border-radius: 50%; border: 3px solid var(--accent);
+            box-shadow: 0 0 30px var(--accent), inset 0 0 20px var(--accent);
+            display: flex; justify-content: center; align-items: center;
+            background: rgba(20, 0, 10, 0.6); transition: all 0.2s ease-in-out;
+        }
+        .core-inner {
+            width: 90px; height: 90px; border-radius: 50%; border: 2px solid #fff;
+            box-shadow: 0 0 20px var(--accent); background: rgba(255, 105, 180, 0.1);
+        }
+
+        .listening { animation: breathe 3s infinite ease-in-out; }
+        .speaking { animation: swing 0.5s infinite alternate ease-in-out; border-color: #ff00ff; box-shadow: 0 0 60px #ff00ff; }
+        .thinking { animation: spin 1s infinite linear; border-top-color: transparent; border-right-color: transparent; }
+        
+        @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } }
+        @keyframes swing { 0% { transform: scale(1) rotate(-2deg); } 100% { transform: scale(1.1) rotate(2deg); } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Chat */
+        #chat-container {
+            flex: 1; padding: 20px; overflow-y: auto; z-index: 1;
+            display: flex; flex-direction: column; gap: 15px;
+        }
+        #chat-container::-webkit-scrollbar { width: 6px; }
+        #chat-container::-webkit-scrollbar-track { background: transparent; }
+        #chat-container::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+
+        .msg { max-width: 85%; padding: 10px 14px; border-radius: 12px; font-size: 14px; line-height: 1.5; word-wrap: break-word; }
+        .msg.user { align-self: flex-end; background-color: var(--user-msg-bg); border-bottom-right-radius: 2px; }
+        .msg.ai { align-self: flex-start; background-color: var(--ai-msg-bg); border: 1px solid #444; border-bottom-left-radius: 2px; }
+        .typing-cursor::after { content: '▋'; animation: blink 1s infinite; color: var(--accent); }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* Input */
+        #input-area { padding: 15px; background: #111; display: flex; gap: 10px; z-index: 2; border-top: 1px solid #333; }
+        input {
+            flex: 1; background: #2f2f2f; border: none; color: white;
+            padding: 12px 15px; border-radius: 20px; outline: none; font-family: inherit;
+        }
+        input:disabled { opacity: 0.5; cursor: not-allowed; }
+        button {
+            background: var(--accent); border: none; color: white; width: 40px; height: 40px;
+            border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center;
+            font-weight: bold; transition: background 0.2s;
+        }
+        button:hover { background: #ff1493; }
+        button:disabled { background: #555; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <div id="title-bar">
+        <div class="drag-region">LUNA AI</div>
+        <div class="window-controls">
+            <div class="control-btn min-btn" onclick="toggleMiniMode()"></div>
+            <div class="control-btn close-btn" onclick="closeApp()"></div>
+        </div>
+    </div>
+
+    <div class="reactor-container" onclick="toggleMiniMode()">
+        <div id="reactor" class="arc-reactor listening">
+            <div class="core-inner"></div>
+        </div>
+    </div>
+
+    <div id="chat-container">
+        <div class="msg ai">Hello! I'm online.</div>
+    </div>
+
+    <div id="input-area">
+        <input type="text" id="user-input" placeholder="Message Luna..." onkeypress="handleKey(event)">
+        <button id="send-btn" onclick="sendMsg()">➤</button>
+    </div>
+
+    <script>
+        let isMiniMode = false;
+        let currentAIResponseElement = null;
+
+        async function closeApp() { await window.pywebview.api.close_app(); }
+
+        async function toggleMiniMode() {
+            isMiniMode = !isMiniMode;
+            document.body.classList.toggle('mini-mode', isMiniMode);
+            if (isMiniMode) await window.pywebview.api.resize_window(200, 200);
+            else await window.pywebview.api.resize_window(380, 650);
+        }
+
+        async function sendMsg() {
+            const input = document.getElementById('user-input');
+            const btn = document.getElementById('send-btn');
+            const text = input.value.trim();
+            if(!text) return;
+
+            input.value = '';
+            input.disabled = true;
+            btn.disabled = true;
+
+            addMessage(text, 'user');
+            createAIBubble();
+            await window.pywebview.api.user_message(text);
+        }
+
+        function handleKey(e) { if(e.key === 'Enter' && !document.getElementById('user-input').disabled) sendMsg(); }
+
+        function createAIBubble() {
+            const container = document.getElementById('chat-container');
+            const div = document.createElement('div');
+            div.className = 'msg ai typing-cursor';
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            currentAIResponseElement = div;
+        }
+
+        window.addChunk = (chunk) => {
+            if (currentAIResponseElement) {
+                currentAIResponseElement.innerText += chunk;
+                const container = document.getElementById('chat-container');
+                container.scrollTop = container.scrollHeight;
+            }
+        };
+
+        window.generationComplete = () => {
+            if (currentAIResponseElement) {
+                currentAIResponseElement.classList.remove('typing-cursor');
+                currentAIResponseElement = null;
+            }
+            document.getElementById('user-input').disabled = false;
+            document.getElementById('send-btn').disabled = false;
+            document.getElementById('user-input').focus();
+        };
+
+        window.addMessage = (text, type) => {
+            const container = document.getElementById('chat-container');
+            const div = document.createElement('div');
+            div.className = `msg ${type}`;
+            div.innerText = text;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        };
+
+        window.setStatus = (status) => {
+            const r = document.getElementById('reactor');
+            r.className = 'arc-reactor'; 
+            if(status === 'speaking') r.classList.add('speaking');
+            else if(status === 'thinking') r.classList.add('thinking');
+            else r.classList.add('listening');
+        };
+    </script>
+</body>
+</html>

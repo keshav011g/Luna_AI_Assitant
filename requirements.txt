@@ -1,0 +1,16 @@
+ollama
+pywebview
+edge-tts
+pygame
+google-genai
+requests
+pyautogui
+plyer
+psutil
+pystray
+pillow
+pygetwindow
+screen_brightness_control
+pyperclip
+pycaw
+comtypes
