@@ -15,7 +15,7 @@ import comtypes
 import shutil
 
 # --- API KEY ---
-GOOGLE_API_KEY = "AIzaSyDVgfX70qyrh_13TkF9O1mC5e_m_f2m6Es" # <--- FIXED: Updated with your key
+GOOGLE_API_KEY = "Enter_Your_Gemini_API_Key_Here"
 
 # --- OPTIONAL DEPENDENCIES ---
 try: import screen_brightness_control as sbc
